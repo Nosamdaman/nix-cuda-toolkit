@@ -1,77 +1,76 @@
 {
-    description = "A flake for developing with CUDA";
+    description = "A flake providing a more traditional CUDA Toolkit Experience";
 
     inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    outputs = { self, nixpkgs, ... }: let
+    outputs = { self, nixpkgs }: let
         system = "x86_64-linux";
-        pkgs = import nixpkgs {
-            inherit system;
-            config.allowUnfree = true;
-        };
-        cuda-installer = pkgs.buildFHSEnv {
-            pname = "cuda-installer";
-            version = "13.3.0";
+        pkgs = nixpkgs.legacyPackages.${system};
+        install-env = pkgs.buildFHSEnv {
+            name = "install-env";
 
             targetPkgs = pkgs: (with pkgs; [
                 coreutils-full
-                libxml2
+                libxml2_13
                 libtinfo
                 ncurses
                 gcc
                 which
             ]);
-
-            runScript = "bash ${./cuda_13.3.0_610.43.02_linux.run}";
         };
     in {
-        packages.${system}.default = pkgs.stdenv.mkDerivation {
-            pname = "cuda-toolkit";
-            version = "13.3.0";
+        packages.${system} = {
+            default = self.packages.${system}.cuda-toolkit_13_0;
+            cuda-toolkit_13_0 = pkgs.stdenv.mkDerivation {
+                pname = "cuda-toolkit";
+                version = "13.3.0";
 
-            src = ./cuda_13.3.0_610.43.02_linux.run;
+                src = pkgs.fetchurl {
+                    url = "https://developer.download.nvidia.com/compute/cuda/13.3.0/local_installers/cuda_13.3.0_610.43.02_linux.run";
+                    hash = "sha256-X3lIi1f+aTa8laVvm34oOKsvLuMxOxAIlCIG7r4GNS0=";
+                };
 
-            nativeBuildInputs = with pkgs; [
-                autoPatchelfHook
-                cuda-installer
-                dbus
-                fontconfig
-                gcc
-                glib
-                gmp
-                libgcc
-                libGL
-                libibmad
-                libpng
-                libtinfo
-                libxkbfile
-                libxml2_13
-                libxshmfence
-                linuxPackages.nvidiaPackages.stable
-                ncurses
-                nss
-                numactl
-                python311
-                python312
-                python313
-                qt6.qtbase
-                qt6.wrapQtAppsHook
-                rdma-core
-            ];
+                nativeBuildInputs = with pkgs; [ autoPatchelfHook qt6.wrapQtAppsHook ];
 
-            autoPatchelfIgnoreMissingDeps = [
-                "libpython3.8.so.1.0"
-                "libpython3.9.so.1.0"
-                "libpython3.10.so.1.0"
-            ];
+                buildInputs = with pkgs; [
+                    dbus
+                    fontconfig
+                    gcc
+                    glib
+                    gmp
+                    libgcc
+                    libGL
+                    libibmad
+                    libpng
+                    libtinfo
+                    libxkbfile
+                    libxml2_13
+                    libxshmfence
+                    linuxPackages.nvidiaPackages.latest
+                    ncurses
+                    nss
+                    numactl
+                    python311
+                    python312
+                    python313
+                    qt6.qtbase
+                    rdma-core
+                ];
 
-            dontUnpack = true;
+                autoPatchelfIgnoreMissingDeps = [
+                    "libpython3.8.so.1.0"
+                    "libpython3.9.so.1.0"
+                    "libpython3.10.so.1.0"
+                ];
 
-            installPhase = ''
-                runHook preInstall
-                ${cuda-installer}/bin/cuda-installer --silent --toolkit --toolkitpath=$out
-                runHook postInstall
-            '';
+                dontUnpack = true;
+
+                installPhase = ''
+                    runHook preInstall
+                    ${install-env}/bin/install-env $src --silent --no-man-page --toolkit --toolkitpath=$out
+                    runHook postInstall
+                '';
+            };
         };
     };
 }
