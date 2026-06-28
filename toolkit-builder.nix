@@ -21,48 +21,12 @@ in pkgs.stdenv.mkDerivation {
         hash = hash;
     };
 
-    nativeBuildInputs = with pkgs; [ autoPatchelfHook qt6.wrapQtAppsHook autoAddDriverRunpath ];
-
-    buildInputs = with pkgs; [
-        dbus
-        fontconfig
-        gcc
-        glib
-        gmp
-        libgcc
-        libglvnd
-        libibmad
-        libpng
-        libtinfo
-        libxkbfile
-        libxml2_13
-        libxshmfence
-        ncurses
-        nss
-        numactl
-        python311
-        python312
-        python313
-        qt6.qtbase
-        qt6.qtwayland
-        wayland
-        rdma-core
-    ];
-
-    autoPatchelfIgnoreMissingDeps = [
-        "libcuda.so.1"
-        "libnvidia-ml.so.1"
-        "libpython3.8.so.1.0"
-        "libpython3.9.so.1.0"
-        "libpython3.10.so.1.0"
-    ];
-
     dontUnpack = true;
-    dontWrapQtApps = true;
 
     installPhase = ''
         runHook preInstall
         ${install-env}/bin/install-env $src --silent --no-man-page --toolkit --toolkitpath=$out
         runHook postInstall
     '';
+
 }
