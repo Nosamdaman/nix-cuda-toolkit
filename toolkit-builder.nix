@@ -22,10 +22,11 @@ in pkgs.stdenv.mkDerivation {
     };
 
     dontUnpack = true;
+    dontFixup = true;
 
     installPhase = ''
         runHook preInstall
-        ${install-env}/bin/install-env $src --silent --no-man-page --toolkit --toolkitpath=$out
+        ${install-env}/bin/install-env $src --silent --no-man-page --toolkit --toolkitpath=$out/cuda
         runHook postInstall
     '';
 

@@ -13,6 +13,7 @@
         glib
         libcap
         libglvnd
+        gmp
         libpng
         libtinfo
         libtree
@@ -37,5 +38,5 @@
         zstd
     ]);
 
-    runScript = "fish";
+    runScript = "env CUDA_HOME=${toolkit-pkg}/cuda PATH=${toolkit-pkg}/cuda/bin:$PATH CC=gcc CXX=g++ fish";
 }
