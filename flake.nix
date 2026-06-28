@@ -30,7 +30,7 @@
                     hash = "sha256-X3lIi1f+aTa8laVvm34oOKsvLuMxOxAIlCIG7r4GNS0=";
                 };
 
-                nativeBuildInputs = with pkgs; [ autoPatchelfHook qt6.wrapQtAppsHook ];
+                nativeBuildInputs = with pkgs; [ autoPatchelfHook qt6.wrapQtAppsHook autoAddDriverRunpath ];
 
                 buildInputs = with pkgs; [
                     dbus
@@ -39,14 +39,13 @@
                     glib
                     gmp
                     libgcc
-                    libGL
+                    libglvnd
                     libibmad
                     libpng
                     libtinfo
                     libxkbfile
                     libxml2_13
                     libxshmfence
-                    linuxPackages.nvidiaPackages.latest
                     ncurses
                     nss
                     numactl
@@ -54,16 +53,21 @@
                     python312
                     python313
                     qt6.qtbase
+                    qt6.qtwayland
+                    wayland
                     rdma-core
                 ];
 
                 autoPatchelfIgnoreMissingDeps = [
+                    "libcuda.so.1"
+                    "libnvidia-ml.so.1"
                     "libpython3.8.so.1.0"
                     "libpython3.9.so.1.0"
                     "libpython3.10.so.1.0"
                 ];
 
                 dontUnpack = true;
+                dontWrapQtApps = true;
 
                 installPhase = ''
                     runHook preInstall
