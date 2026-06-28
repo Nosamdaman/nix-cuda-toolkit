@@ -21,7 +21,7 @@
     in {
         packages.${system} = {
             default = self.packages.${system}.cuda-toolkit_13_0;
-            cuda-toolkit_13_0 = pkgs.stdenv.mkDerivation {
+            cuda-toolkit_13_3 = pkgs.stdenv.mkDerivation {
                 pname = "cuda-toolkit";
                 version = "13.3.0";
 
