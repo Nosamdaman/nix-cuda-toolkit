@@ -10,10 +10,15 @@
         fish
         fontconfig
         gcc
+        glew
+        glfw
         glib
-        libcap
-        libglvnd
+        glm
         gmp
+        libcap
+        libGLU
+        libglut
+        libglvnd
         libpng
         libtinfo
         libtree
@@ -23,20 +28,27 @@
         libxkbcommon
         libxkbfile
         libxml2_13
+        mpi
         ncurses
         nspr
         nss
         openssl
+        pkg-config
         python3
-        (python314.withPackages (python-pkgs: with python-pkgs; [ virtualenv pip ]))
-        (python313.withPackages (python-pkgs: with python-pkgs; [ virtualenv pip ]))
         (python312.withPackages (python-pkgs: with python-pkgs; [ virtualenv pip ]))
+        (python313.withPackages (python-pkgs: with python-pkgs; [ virtualenv pip ]))
+        (python314.withPackages (python-pkgs: with python-pkgs; [ virtualenv pip ]))
         qt6.qtbase
         qt6.qtwayland
+        vulkan-headers
+        vulkan-loader
         wayland
         which
+        xorgproto
         zstd
     ]);
 
-    runScript = "env CUDA_HOME=${toolkit-pkg}/cuda PATH=${toolkit-pkg}/cuda/bin:$PATH CC=gcc CXX=g++ fish";
+    extraOutputsToInstall = [ "dev" ];
+
+    runScript = "env CMAKE_INCLUDE_PATH=/usr/include CMAKE_LIBRARY_PATH=/usr/lib CUDA_HOME=${toolkit-pkg}/cuda PATH=${toolkit-pkg}/cuda/bin:$PATH CC=gcc CXX=g++ fish";
 }
